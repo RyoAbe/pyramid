@@ -282,24 +282,27 @@ configurator の ``add_view`` は、
 に、ブラウザでアクセスすると、``goodbye_world`` ビュー関数が呼び出されることになる。
 
 
-Each invocation of the ``add_view`` method implies a :term:`view
-configuration` registration.  Each :term:`predicate` provided as a
-keyword argument to the ``add_view`` method narrows the set of
-circumstances which would cause the view configuration's callable to
-be invoked.  In general, a greater number of predicates supplied along
-with a view configuration will more strictly limit the applicability
-of its associated view callable.  When :app:`Pyramid` processes a
-request, however, the view callable with the *most specific* view
-configuration (the view configuration that matches the most specific
-set of predicates) is always invoked.
+それぞれの ``add_view`` メソッドの実行により、
+:term:`view configuration` が登録される。
+``add_view`` メソッドのキーワード引数で指定される
+:term:`predicate` は、ビュー関数を実行するリクエストの条件を追加する。
+一般的には、多くの条件を増やすことで、さらにビュー関数を実行する条件を制限できる。
+:app:`Pyramid` が、リクエストを処理するときに、
+*もっとも詳細な* 条件を指定されている
+(view configuration がもっとも条件に多く一致した )
+ビュー関数を実行する。
 
-In this application, :app:`Pyramid` chooses the most specific view
-callable based only on view :term:`predicate` applicability.  The
-ordering of calls to
-:meth:`pyramid.configuration.Configurator.add_view` is never very
-important.  We can register ``goodbye_world`` first and
-``hello_world`` second; :app:`Pyramid` will still give us the most
-specific callable when a request is dispatched to it.
+
+このアプリケーションでは、
+:app:`Pyramid` が、もっとも詳細なビュー関数を
+view :term:`predicate` を適用して、決定する。
+:meth:`pyramid.configuration.Configurator.add_view` の呼び出し順序は
+一切関係しない。
+``goodbye_world`` を最初に登録して、
+``hello_world`` を次に登録できる。
+この場合でも、 :app:`Pyramid` は、リクエストに対して、
+もっとも詳細な関数を呼び出す。
+
 
 Ending Configuration
 ~~~~~~~~~~~~~~~~~~~~
@@ -309,14 +312,14 @@ Ending Configuration
 
    config.end()
 
-The :meth:`pyramid.configuration.Configurator.end` method tells the
-system that application configuration has ended.  It is the inverse of
-:meth:`pyramid.configuration.Configurator.begin`.  In particular,
-this causes the :term:`application registry` associated with this
-configurator to no longer be the "current" application registry,
-meaning that code which attempts to use the application registry
-:term:`thread local` will no longer obtain the registry associated
-with the configurator.
+
+:meth:`pyramid.configuration.Configurator.end` メソッドは、
+システムに、アプリケーション設定が完了したことを知らせsる。
+これは、:meth:`pyramid.configuration.Configurator.begin` に対応している。
+特に、:term:`application registry` に関連付けられた、
+configurator がもはや、"current" のアプリケーションではないことになる。
+これにより、:term:`thread local` で取得されるアプリケーションレジストリが、
+configuratorと関連したレジストリでなくなることを意味する。
 
 .. note::
 
@@ -347,6 +350,7 @@ requestor.  :term:`WSGI` is a protocol that allows servers to talk to
 Python applications.  We don't discuss :term:`WSGI` in any depth
 within this book, however, you can learn more about it by visiting
 `wsgi.org <http://wsgi.org>`_.
+
 
 The :app:`Pyramid` application object, in particular, is an
 instance of a class representing a :app:`Pyramid` :term:`router`.
