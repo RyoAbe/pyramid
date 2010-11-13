@@ -59,10 +59,7 @@ Hello World, Goodbye World
 8080番ポートのルートURL (``/``) にブラウザでアクセスしてみると、
 サーバーは単純な "Hello world!" というテキストを返す。
 さらにブラウザで ``/goodbye`` URLにアクセスすると、
- "Goodbye world!" というテキストを返す。
-
-Now that we have a rudimentary understanding of what the application
-does, let's examine it piece-by-piece.
+"Goodbye world!" というテキストを返す。
 
 これで、どんなアプリケーションなのか、初歩的な理解を得られたはずだ。
 断片をそれぞれ説明していこう。
@@ -161,10 +158,9 @@ callables in a :app:`Pyramid` application accept a single argument,
 Application Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the above script, the following code, representing the
-*configuration* of an application which uses the previously defined
-imports and function definitions is placed within the confines of an
-``if`` statement:
+スクリプト中で、以下のように、すでに説明したインポートや、
+関数定義を利用するための、アプリケーションの設定(*configuration*)
+``if`` 文の中に書かれている。
 
 .. code-block:: python
    :linenos:
@@ -178,7 +174,7 @@ imports and function definitions is placed within the confines of an
        app = config.make_wsgi_app()
        serve(app, host='0.0.0.0')
 
-Let's break this down this piece-by-piece.
+じゃあ、これを細かくかみくだいてみていこう。
 
 Configurator Construction
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -189,28 +185,31 @@ Configurator Construction
    if __name__ == '__main__':
        config = Configurator()
 
-The ``if __name__ == '__main__':`` line in the code sample above
-represents a Python idiom: the code inside this if clause is not
-invoked unless the script containing this code is run directly from
-the command line. For example, if the file named ``helloworld.py``
-contains the entire script body, the code within the ``if`` statement
-will only be invoked when ``python helloworld.py`` is executed from
-the operating system command line.
+コード中の、``if __name__ == '__main__':`` という行は、
+Pythonイディオムになっている。
+スクリプトが直接コマンドラインから実行されなかった場合、
+if文中のコードは実行されない。
+たとえば、このコードが、 ``helloworld.py`` という名前のファイルに
+保存されている場合、このコードは、 ``python helloworld.py`` と
+オペレーションシステムのコマンドラインで実行した場合のみ、実行される。
 
-``helloworld.py`` in this case is a Python *module*.  Using the ``if``
-clause is necessary -- or at least best practice -- because code in
-any Python module may be imported by another Python module.  By using
-this idiom, the script is indicating that it does not want the code
-within the ``if`` statement to execute if this module is imported; the
-code within the ``if`` block should only be run during a direct script
-execution.
 
-The ``config = Configurator()`` line above creates an instance of the
-:class:`pyramid.configuration.Configurator` class.  The resulting
-``config`` object represents an API which the script uses to configure
-this particular :app:`Pyramid` application.  Methods called on the
-Configurator will cause registrations to be made in a
-:term:`application registry` associated with the application.
+この場合、 ``helloworld.py`` は、 Python *モジュール* である。
+``if`` の条件は必要 -- または、ベストプラクティス -- である。
+なぜなら、 どのPythonモジュールも他の Pythonモジュールから
+インポートされるからである。
+このイディオムは、
+このスクリプトが、モジュールとしてインポートされたときに、
+``if`` 文の中身を実行しないことを明示する。
+直接、スクリプトとして実行された場合だけ、 ``if`` 文の中身が実行される。
+
+``config = Configurator()`` の行は、 :class:`pyramid.configuration.Configurator`
+のインスタンスを作成している。
+``config`` オブジェクトは、 特定の :app:`Pyramid` アプリケーションに対する
+設定をするためのAPIを実装している。
+Configuratorのメソッドが呼び出されると、 
+Cornfiguratorは、 :term:`application registory` に、
+アプリケーションと関連付けて登録する。
 
 Beginning Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,15 +219,15 @@ Beginning Configuration
 
    config.begin()
 
-The :meth:`pyramid.configuration.Configurator.begin` method tells
-the system that application configuration has begun.  In particular,
-this causes the :term:`application registry` associated with this
-configurator to become the "current" application registry, meaning
-that code which attempts to use the application registry :term:`thread
-local` will obtain the registry associated with the configurator.
-This is an explicit step because it's sometimes convenient to use a
-configurator without causing the registry associated with the
-configurator to become "current".
+
+:meth:`pyramid.configuration.Configurator.begin` メソッドは、
+システムに、アプリケーション設定を開始することを知らせる。
+特に、 :term:`application registry` が、このconfigurator を、
+"現在の" アプリケーションとして登録する。
+これは、 application registry の :term:`thread local` に
+このconfiguratorを設定する。
+これは明示的に行われる。
+なぜならconfiguratorを"current"として、 registoryと関係なく使用するからである。
 
 .. note::
 
@@ -247,42 +246,41 @@ Adding Configuration
    config.add_view(hello_world)
    config.add_view(goodbye_world, name='goodbye')
 
-Each of these lines calls the
-:meth:`pyramid.configuration.Configurator.add_view` method.  The
-``add_view`` method of a configurator registers a :term:`view
-configuration` within the :term:`application registry`.  A :term:`view
-configuration` represents a set of circumstances related to the
-:term:`request` that will cause a specific :term:`view callable` to be
-invoked.  This "set of circumstances" is provided as one or more
-keyword arguments to the ``add_view`` method.  Each of these keyword
-arguments is known as a view configuration :term:`predicate`.
+各行は、:meth:`pyramid.configuration.Configurator.add_view` メソッド
+を呼んでいる。
+configurator の ``add_view`` は、
+:term:`view configuration` を :term:`application registry` に登録する。
+:term:`view configuration` は、 :term:`request` に関する
+条件と、それに関連する :term:`view callable` を設定する。
+条件は、``add_view`` のキーワード引数で設定する。
+それぞれのキーワード引数は、 view configuration :term:`predicate` と呼ばれる。
 
-The line ``config.add_view(hello_world)`` registers the
-``hello_world`` function as a view callable.  The ``add_view`` method
-of a Configurator must be called with a view callable object or a
-:term:`dotted Python name` as its first argument, so the first
-argument passed is the ``hello_world`` function.  This line calls
-``add_view`` with a *default* value for the :term:`predicate`
-argument, named ``name``.  The ``name`` predicate defaults to a value
-equalling the empty string (``''``).  This means that we're
-instructing :app:`Pyramid` to invoke the ``hello_world`` view
-callable when the :term:`view name` is the empty string.  We'll learn
-in later chapters what a :term:`view name` is, and under which
-circumstances a request will have a view name that is the empty
-string; in this particular application, it means that the
-``hello_world`` view callable will be invoked when the root URL ``/``
-is visited by a browser.
 
-The line ``config.add_view(goodbye_world, name='goodbye')`` registers
-the ``goodbye_world`` function as a view callable.  The line calls
-``add_view`` with the view callable as the first required positional
-argument, and a :term:`predicate` keyword argument ``name`` with the
-value ``'goodbye'``.  The ``name`` argument supplied in this
-:term:`view configuration` implies that only a request that has a
-:term:`view name` of ``goodbye`` should cause the ``goodbye_world``
-view callable to be invoked.  In this particular application, this
-means that the ``goodbye_world`` view callable will be invoked when
-the URL ``/goodbye`` is visited by a browser.
+``config.add_view(hello_world)`` の行は、
+``hello_world`` 関数をビュー関数として登録している。
+この Configurator の ``add_view`` メソッドは、
+ビュー関数か、 :term:`dotted Python name` のどちらかが第一引数でなければならない。
+この場合は、 ``hello_world`` が第一引数として渡されている。
+この行では、 ``add_view`` の、 :term:`predicate` の ``name`` を 
+*デフォルト* 値にしている。
+``name`` 条件のデフォルト値は、から文字(``''``) である。
+これは、 空文字の :term:`view name` の場合に、
+:app:`Pyramid` が、 ``hello_world`` を実行するように設定している。
+:term:`view name` は、後の章で詳しく解説しているが、
+リクエストの状態が、view名として、空文字となっているということである。
+このアプリケーションでいえば、 ``hello_world`` ビュー関数は、
+ルートURL ``/`` にブラウザからアクセスした場合に呼び出されることになる。
+
+``config.add_view(goodbye_world, name='goodbye')`` では、
+``goodbye_world`` 関数をビュー関数として登録している。
+この行では、 ``add_view`` を、第一引数にビュー関数を、
+``name`` キーワード引数に、 ``'goodbye'`` を渡して呼び出している。
+``name`` 引数は、この :term:`view confguration`` が、
+`view name` が、 ``'goodbye'`` のリクエストの場合に ``goodbye_world``
+ビュー関数が実行されることをあらわしている。
+このアプリケーションでは、 ``/goodbye`` URL
+に、ブラウザでアクセスすると、``goodbye_world`` ビュー関数が呼び出されることになる。
+
 
 Each invocation of the ``add_view`` method implies a :term:`view
 configuration` registration.  Each :term:`predicate` provided as a
