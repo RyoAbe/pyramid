@@ -1,27 +1,28 @@
 .. _firstapp_chapter:
 
-Creating Your First :app:`Pyramid` Application
+最初の :app:`Pyramid` アプリケーションを作る
 =================================================
 
-We will walk through the creation of a tiny :app:`Pyramid`
-application in this chapter.  After we're finished creating it, we'll
-explain in more detail how the application works.
+
+この章では、最小の `Pyramid` アプリケーションを作る。
+作り終わったら、どのようにアプリケーションが動くのかを詳細に説明する。
 
 .. note::
 
-   If you're a "theory-first" kind of person, you might choose to read
-   :ref:`contextfinding_chapter` and :ref:`views_chapter` to augment
-   your understanding before diving into the code that follows, but
-   it's not necessary if -- like many programmers -- you're willing to
-   "go with the flow".
+   もしも、あなたが理論派であるなら、コードを追う前に、
+   :ref:`contextfinding_chapter` 
+   と :ref:`views_chapter` が理解の助けになるだろう。
+   しかし、多くのプログラマーがそうであるように、流れに身を任せるなら?、
+   これらは必要でない。
 
 .. _helloworld_imperative:
 
 Hello World, Goodbye World
 --------------------------
 
-Here's one of the very simplest :app:`Pyramid` applications,
-configured imperatively:
+
+以下は、命令的な設定方法による、
+非常にシンプルな :app:`Pyramid` アプリケーションの例である。
 
 .. code-block:: python
    :linenos:
@@ -45,27 +46,31 @@ configured imperatively:
        app = config.make_wsgi_app()
        serve(app, host='0.0.0.0')
 
-When this code is inserted into a Python script named ``helloworld.py`` and
-executed by a Python interpreter which has the :app:`Pyramid` software
-installed, an HTTP server is started on TCP port 8080:
+このコードを ``helloworld.py`` というPythonスクリプトに保存したら、
+:app:`Pyramid` がインストールされている Python インタプリタで実行させよう。
+すると、 TCPの8080番ポートでHTTPサーバーが開始される。
 
 .. code-block:: bash
 
    $ python helloworld.py
    serving on 0.0.0.0:8080 view at http://127.0.0.1:8080
 
-When port 8080 is visited by a browser on the root URL
-(``/``), the server will simply serve up the text "Hello world!"  When
-visited by a browser on the URL ``/goodbye``, the server will serve up
-the text "Goodbye world!"
- 
+
+8080番ポートのルートURL (``/``) にブラウザでアクセスしてみると、
+サーバーは単純な "Hello world!" というテキストを返す。
+さらにブラウザで ``/goodbye`` URLにアクセスすると、
+ "Goodbye world!" というテキストを返す。
+
 Now that we have a rudimentary understanding of what the application
 does, let's examine it piece-by-piece.
+
+これで、どんなアプリケーションなのか、初歩的な理解を得られたはずだ。
+断片をそれぞれ説明していこう。
 
 Imports
 ~~~~~~~
 
-The above script defines the following set of imports:
+上記のスクリプトでは以下のような import セットを定義している。:
 
 .. code-block:: python
    :linenos:
@@ -74,25 +79,30 @@ The above script defines the following set of imports:
    from pyramid.response import Response
    from paste.httpserver import serve
 
-The script imports the ``Configurator`` class from the
-``pyramid.configuration`` module.  This class is used to configure
-:app:`Pyramid` for a particular application.  An instance of this class
-provides methods which help configure various parts of :app:`Pyramid` for a
-given application deployment.
+このスクリプトは、 ``Configurator`` クラスを ``pyramid.configuration`` モジュールからインポートしている。
+このクラスは、 :app:`Pyramid` を、特定のアプリケーションに設定するために使われる。
+このクラスのインスタンスは、 
+:app:`Pyramid` アプリケーション開発のさまざまな設定を行うメソッドを持っている。
 
-The script uses the :class:`pyramid.response.Response` class later in the
-script to create a :term:`response` object.
+そして、 :class:`pyramid.response.Response` クラスを :term:`response` オブジェクト作成のために、後ほど使用する。
 
-Like many other Python web frameworks, :app:`Pyramid` uses the :term:`WSGI`
-protocol to connect an application and a web server together.  The
+他の多くのPython Web フレームワーク と同様、 :app:`Pyramid` も、
+サーバーとアプリケーションを接続するために、 :term:`WSGI`
+プロトコルを使っている。
+
+The
 :mod:`paste.httpserver` server is used in this example as a WSGI server for
 convenience, as the ``paste`` package is a dependency of :app:`Pyramid` itself.
+
+この例では、 :mod:`paste.httpserver` サーバーを
+WSGIサーバーとして便利に使っている。
 
 View Callable Declarations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The above script, beneath its set of imports, defines two functions:
-one named ``hello_world`` and one named ``goodbye_world``.
+上記のスクリプトでは、インポートセットの下に、２つの関数を定義している。
+１つは、 ``hello_world`` で、もう１つは、 ``goodbye_world``だ。
+
 
 .. code-block:: python
    :linenos:
@@ -103,31 +113,43 @@ one named ``hello_world`` and one named ``goodbye_world``.
    def goodbye_world(request):
        return Response('Goodbye world!')
 
-These functions don't do anything very taxing.  Both functions accept
-a single argument (``request``).  The ``hello_world`` function does
-nothing but return a response instance with the body ``Hello world!``.
-The ``goodbye_world`` function returns a response instance with the
-body ``Goodbye world!``.
+これらの関数には、なにもやっかいなところはない。
+どちらの関数も、1つ引数を受け取る(``request``)。
 
-Each of these functions is known as a :term:`view callable`.  View
+``hello_world`` 関数は、なにもせずに、
+``Hello world!`` というボディのレスポンスを返す。
+``goodbye_world`` 関数は、 ``Goodbye world!`` というボディのレスポンスを返す。
+
+これらの関数は、 :term:`view callable` として知られている。
+
+訳中の追記：とりあえず、view callable = ビュー関数と訳しておく。
+
+View
 callables in a :app:`Pyramid` application accept a single argument,
-``request`` and are expected to return a :term:`response` object.  A
-view callable doesn't need to be a function; it can be represented via
-another type of object, like a class or an instance, but for our
-purposes here, a function serves us well.
+``request`` and are expected to return a :term:`response` object. 
+ビュー関数は :app:`Pyramid` アプリケーションでは、 ``request`` を受け取り、
+:term:`response` オブジェクトを返すことになっている。
 
-A view callable is always called with a :term:`request` object.  A
-request object is a representation of an HTTP request sent to
-:app:`Pyramid` via the active :term:`WSGI` server.
 
-A view callable is required to return a :term:`response` object because a
-response object has all the information necessary to formulate an actual HTTP
-response; this object is then converted to text by the upstream :term:`WSGI`
-server and sent back to the requesting browser.  To return a response, each
-view callable creates an instance of the :class:`pyramid.response.Response`
-class.  In the ``hello_world`` function, the string ``'Hello world!'`` is
-passed to the ``Response`` constructor as the *body* of the response.  In the
-``goodbye_world`` function, the string ``'Goodbye world!'`` is passed.
+ビュー関数は、関数である必要はなく、クラスやインスタンスなどで実装することも可能である。
+しかし、ここでは、関数でうまく動く。
+
+ビュー関数は通常、 :term:`request` オブジェクトとともに呼び出される。
+リクエストオブジェクトは、 :term:`WSGI` サーバーを経由して、 
+:app:`Pyramid` に送られてきたHTTPリクエストをあらわしている。
+
+
+ビュー関数は、 :term:`response` オブジェクトを返すことが求められる。
+なぜなら、レスポンスオブジェクトが、実際のHTTPレスポンスを生成するために
+必要な情報をすべて持っているからだ。
+このオブジェクトは、 :term:`WSGI` サーバーによって、テキストに変換されて、
+リクエストしたブラウザに返される。
+
+レスポンスを返すために、それぞれのビュー関数は、 :clas:`pyramid.response.Response` クラスのインスタンスを作成している。
+``hello_world`` 関数では、 
+``'Hello wrld!'`` 文字列を ``Response`` のコンストラクタに
+*body* として、渡している。
+``goodbye_world`` 関数では、 ``'Goodbye world!'`` 文字列を渡している。
 
 .. index::
    single: imperative configuration
@@ -143,6 +165,9 @@ In the above script, the following code, representing the
 *configuration* of an application which uses the previously defined
 imports and function definitions is placed within the confines of an
 ``if`` statement:
+
+スクリプト中で、以下のコードは、
+アプリケーションの設定 (*configuration*) を行っている。
 
 .. code-block:: python
    :linenos:
